@@ -1,12 +1,29 @@
 // The cast, drawn from above: Moth in a violet moth-wing cape, guards in navy caps with a
 // suspicion pip ("?" filling, then "!") and speech bubbles, and the wall cameras.
-import { COLOR } from '../config.js';
+import { COLOR, PLAY } from '../config.js';
 import { ALERT } from '../actors/guards.js';
 import { pill, roundRect, text, FONT } from './draw-kit.js';
 import { guardConeColor } from './cones.js';
 
+/** Soft violet footprints, fading with age: the route Moth has taken so far. */
+function drawFootprints(ctx, t) {
+  const n = t.trail.length;
+  t.trail.forEach((p, i) => {
+    const side = p.left ? -1 : 1;
+    ctx.save();
+    ctx.translate(p.x + Math.cos(p.a + Math.PI / 2) * 4 * side, p.y + Math.sin(p.a + Math.PI / 2) * 4 * side);
+    ctx.rotate(p.a);
+    ctx.fillStyle = `rgba(201,162,255,${0.12 + 0.5 * (i / n)})`;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 4.5, 2.6, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  });
+}
+
 export function drawThief(ctx, state) {
   const t = state.thief;
+  drawFootprints(ctx, t);
   if (t.hidden) {
     pill(ctx, 'IN THE VENT...', t.x, t.y - 24, { size: 11, color: '#bcd8ff' });
     return;
@@ -78,15 +95,17 @@ function bubble(ctx, g) {
   if (!g.bubble || g.bubbleT <= 0) return;
   ctx.font = `bold 12px ${FONT}`;
   const w = ctx.measureText(g.bubble).width + 16;
-  const x = g.x + 16;
+  const flip = g.x + 16 + w > PLAY.x + PLAY.w - 6; // keep the bubble on the floor plan
+  const x = flip ? g.x - 16 - w : g.x + 16;
   const y = g.y - 62;
   roundRect(ctx, x, y, w, 22, 6);
   ctx.fillStyle = '#fbf3dc';
   ctx.fill();
   ctx.beginPath();
-  ctx.moveTo(x + 6, y + 22);
-  ctx.lineTo(x + 2, y + 32);
-  ctx.lineTo(x + 16, y + 22);
+  const tx = flip ? x + w - 6 : x + 6;
+  ctx.moveTo(tx, y + 22);
+  ctx.lineTo(flip ? tx + 4 : tx - 4, y + 32);
+  ctx.lineTo(flip ? tx - 10 : tx + 10, y + 22);
   ctx.fill();
   text(ctx, g.bubble, x + 8, y + 15, { size: 12, color: '#1a1030' });
 }

@@ -231,7 +231,29 @@ function prompts(ctx, state, run) {
   }
 }
 
+/** Danger creeping in from the edges while a "?" fills or a camera records, with who is onto you. */
+function tension(ctx, state) {
+  let worst = null;
+  for (const g of state.guards) if (g.suspicion > 0.05 && (!worst || g.suspicion > worst.suspicion)) worst = g;
+  const cam = state.cameras.find((c) => c.sees);
+  const k = Math.max(worst ? Math.min(1, worst.suspicion) : 0, cam ? 0.8 : 0, state.alarm.value >= ALARM.alertAt ? 0.35 : 0);
+  if (k <= 0) return;
+  const cx = PLAY.x + PLAY.w / 2;
+  const cy = PLAY.y + PLAY.h / 2;
+  const g = ctx.createRadialGradient(cx, cy, PLAY.h * 0.42, cx, cy, PLAY.w * 0.62);
+  g.addColorStop(0, 'rgba(255,40,60,0)');
+  g.addColorStop(1, `rgba(255,40,60,${0.32 * k})`);
+  ctx.fillStyle = g;
+  ctx.fillRect(PLAY.x, PLAY.y, PLAY.w, PLAY.h);
+  let warn = '';
+  if (cam) warn = `${cam.id} IS RECORDING YOU: get out of the pink arc!`;
+  else if (worst && worst.mode !== ALERT) warn = `${worst.name} is getting suspicious (${Math.round(worst.suspicion * 100)}%): break line of sight`;
+  else if (worst) warn = `${worst.name} IS CHASING YOU: smoke, shadows or run`;
+  if (warn) pill(ctx, warn, cx + 90, PLAY.y + (state.thief.hasLoot ? 62 : 26), { size: 13, color: '#ffd9a8', bg: 'rgba(60,8,14,0.9)', edge: COLOR.lockdown });
+}
+
 export function drawHud(ctx, state, run) {
+  tension(ctx, state);
   topBar(ctx, state, run);
   sidePanel(ctx, state);
   toolBar(ctx, state, run);

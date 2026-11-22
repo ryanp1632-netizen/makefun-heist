@@ -7,6 +7,7 @@ import { ALERT, INVESTIGATE, PATROL, SUSPICIOUS } from './actors/guards.js';
 import { emitNoise } from './systems/noise.js';
 import { useTool } from './systems/tools.js';
 import { inShadow } from './systems/vision.js';
+import { leaveFootprint } from './actors/thief.js';
 
 const IDLE = { dx: 0, dy: 0 };
 
@@ -18,6 +19,19 @@ function place(guard, x, y, facing, mode, suspicion = 0, bubble = null) {
   Object.assign(guard, { x, y, facing, mode, suspicion, bubble, bubbleT: bubble ? 2 : 0, target: null });
 }
 
+/** Lay the footprints Moth would leave walking these points, with the thief's own trail rule. */
+function walkTrail(thief, points) {
+  for (let i = 1; i < points.length; i += 1) {
+    const [ax, ay] = points[i - 1];
+    const [bx, by] = points[i];
+    const n = Math.ceil(Math.hypot(bx - ax, by - ay) / 4);
+    for (let k = 0; k <= n; k += 1) {
+      Object.assign(thief, { x: ax + ((bx - ax) * k) / n, y: ay + ((by - ay) * k) / n, facing: Math.atan2(by - ay, bx - ax) });
+      leaveFootprint(thief);
+    }
+  }
+}
+
 function byName(state, name) {
   return state.guards.find((g) => g.name === name);
 }
@@ -26,10 +40,11 @@ function byName(state, name) {
 function heistScene(r) {
   const s = startFloor(1, { smoke: 2, emp: 1, coin: 2, cutter: 1 });
   run(s, 3.2);
+  walkTrail(s.thief, [[64, 604], [190, 604], [340, 574], [430, 528], [492, 482]]);
   Object.assign(s.thief, { x: 492, y: 478, facing: -Math.PI / 2, sneaking: true, inShadow: true });
   s.thief.job = { kind: 'cut', dur: 1.6, t: 1.0, target: s.glass[0], label: '' };
   useTool(s, 'emp', 860, 646);
-  useTool(s, 'smoke', 560, 196);
+  useTool(s, 'smoke', 628, 196);
   s.cameras[1].offT = 6.2;
   s.time = 9.4;
   for (const c of s.cameras) c.angle = c.base + c.sweep * Math.sin((s.time * Math.PI * 2) / c.period);

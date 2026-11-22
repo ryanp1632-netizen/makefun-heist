@@ -51,20 +51,21 @@ export function drawSmokeAndNoise(ctx, state) {
     ctx.stroke();
   }
   for (const c of state.clouds) {
-    for (let i = 0; i < 7; i += 1) {
-      const a = i * 0.9 + c.t * 0.4;
-      const ox = Math.cos(a) * c.r * 0.35;
-      const oy = Math.sin(a) * c.r * 0.35;
-      ctx.fillStyle = 'rgba(205,210,230,0.2)';
+    // a billow of soft puffs that drift as the cloud ages
+    for (let i = 0; i < 11; i += 1) {
+      const a = i * 2.39 + c.t * 0.5;
+      const d = c.r * (0.25 + 0.4 * ((i * 37) % 10) / 10);
+      const px = c.x + Math.cos(a) * d;
+      const py = c.y + Math.sin(a) * d;
+      const pr = c.r * (0.35 + 0.25 * ((i * 53) % 7) / 7);
+      const g = ctx.createRadialGradient(px, py, 0, px, py, pr);
+      g.addColorStop(0, 'rgba(225,228,245,0.42)');
+      g.addColorStop(1, 'rgba(180,185,215,0)');
+      ctx.fillStyle = g;
       ctx.beginPath();
-      ctx.arc(c.x + ox, c.y + oy, c.r * 0.7, 0, Math.PI * 2);
+      ctx.arc(px, py, pr, 0, Math.PI * 2);
       ctx.fill();
     }
-    ctx.strokeStyle = 'rgba(255,255,255,0.3)';
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
-    ctx.stroke();
   }
   for (const e of state.effects) {
     const k = e.t / e.life;

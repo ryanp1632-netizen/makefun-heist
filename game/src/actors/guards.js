@@ -63,12 +63,23 @@ function walkTo(state, guard, x, y, speed, dt) {
   const dx = x - guard.x;
   const dy = y - guard.y;
   const d = Math.hypot(dx, dy);
-  if (d < 4) return true;
+  if (d < 4) {
+    guard.stuckT = 0;
+    return true;
+  }
   const step = Math.min(d, speed * dt);
+  const ox = guard.x;
+  const oy = guard.y;
   guard.x += (dx / d) * step;
   guard.y += (dy / d) * step;
   pushOutOfBoxes(guard, GUARD.radius, state.solids);
   guard.facing = turnToward(guard.facing, Math.atan2(dy, dx), GUARD.turnRate * dt);
+  // pressed against a wall with no way round: count it as there rather than push forever
+  guard.stuckT = Math.hypot(guard.x - ox, guard.y - oy) < step * 0.25 ? (guard.stuckT ?? 0) + dt : 0;
+  if (guard.stuckT > 1.2) {
+    guard.stuckT = 0;
+    return true;
+  }
   return false;
 }
 
@@ -78,6 +89,7 @@ export function hearNoise(state, guard, noise) {
   if (noise.kind === 'step') guard.suspicion = Math.min(0.9, guard.suspicion + 0.18);
   guard.target = { x: noise.x, y: noise.y };
   guard.searchT = 2.4;
+  guard.walkT = 0;
   setMode(guard, INVESTIGATE);
 }
 
@@ -96,6 +108,7 @@ export function radioGuards(state, x, y) {
   if (best) {
     best.target = { x, y };
     best.searchT = 2.4;
+    best.walkT = 0;
     setMode(best, INVESTIGATE);
   }
 }
@@ -141,6 +154,7 @@ export function stepGuard(state, guard, dt) {
       if (guard.lostT > GUARD.loseSight) {
         guard.suspicion = 0.6;
         guard.searchT = 3;
+        guard.walkT = 0;
         setMode(guard, SEARCH);
       }
       break;
@@ -153,7 +167,9 @@ export function stepGuard(state, guard, dt) {
     }
     case INVESTIGATE:
     case SEARCH: {
-      const arrived = !guard.target || walkTo(state, guard, guard.target.x, guard.target.y, GUARD.investigateSpeed * hurry, dt);
+      guard.walkT = (guard.walkT ?? 0) + dt;
+      // a guard gives up on a spot he cannot reach within a few seconds and looks around from there
+      const arrived = !guard.target || guard.walkT > 7 || walkTo(state, guard, guard.target.x, guard.target.y, GUARD.investigateSpeed * hurry, dt);
       if (arrived) {
         guard.searchT -= dt;
         guard.facing += dt * 2.1;

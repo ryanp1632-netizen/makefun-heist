@@ -2,6 +2,7 @@
 // heist plays out (patrols move, a careless walk gets noticed, a lift-and-run escape pays out).
 import { startFloor, stepFloor, floorResults } from '../game/src/heist.js';
 import { FLOORS } from '../game/src/floors.js';
+import { emitNoise } from '../game/src/systems/noise.js';
 
 let fails = 0;
 const check = (c, m) => {
@@ -40,6 +41,15 @@ for (let f = 0; f < FLOORS.length; f += 1) {
   sm.clouds.push({ x: g1.x + Math.cos(g1.facing) * 60, y: g1.y + Math.sin(g1.facing) * 60, r: 40, full: 40, t: 0, life: 99 });
   for (let i = 0; i < 60; i += 1) stepFloor(sm, { dx: 0, dy: 0 });
   check(g1.suspicion === 0, `floor ${f} smoke blocks the cone (suspicion ${g1.suspicion.toFixed(2)})`);
+
+  // a coin thrown into the vault draws guards, who give up and go back to patrol (never stuck on a wall)
+  const c = startFloor(f, { smoke: 0, emp: 0, coin: 1, cutter: 0 });
+  c.thief.hidden = true;
+  emitNoise(c, c.floor.loot.x, c.floor.loot.y, 600, 'coin');
+  stepFloor(c, { dx: 0, dy: 0 });
+  const drawn = c.guards.filter((g) => g.mode === 'INVESTIGATE').length;
+  for (let i = 0; i < 60 * 25; i += 1) stepFloor(c, { dx: 0, dy: 0 });
+  check(drawn > 0 && c.guards.every((g) => g.mode === 'PATROL'), `floor ${f} coin draws ${drawn} guard(s), all back on patrol after 25 s (${c.guards.map((g) => g.mode).join(',')})`);
 
   // 3. stand by the loot, lift it, step into the car bay: escape and results
   const e = startFloor(f, { smoke: 0, emp: 0, coin: 0, cutter: 0 });

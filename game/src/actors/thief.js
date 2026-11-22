@@ -17,6 +17,7 @@ export function makeThief(floor) {
     hasLoot: false,
     job: null, // { kind, t, dur, target, label }
     stepT: 0,
+    trail: [], // footprints, oldest first
   };
 }
 
@@ -72,6 +73,14 @@ function finishJob(state, job) {
   state.rebuildWalls();
 }
 
+/** Drop a footprint every stride, keeping the last few dozen: the route you took, at a glance. */
+export function leaveFootprint(t) {
+  const last = t.trail[t.trail.length - 1];
+  if (last && Math.hypot(t.x - last.x, t.y - last.y) < 18) return;
+  t.trail.push({ x: t.x, y: t.y, a: t.facing, left: !(last && last.left) });
+  if (t.trail.length > 48) t.trail.shift();
+}
+
 /** One step of the thief: the job in hand, else movement, footsteps and the shadow test. */
 export function stepThief(state, input, dt) {
   const t = state.thief;
@@ -111,6 +120,7 @@ export function stepThief(state, input, dt) {
     t.y += dy * speed * dt;
     pushOutOfBoxes(t, THIEF.radius, state.solids);
     t.facing = Math.atan2(dy, dx);
+    leaveFootprint(t);
     t.stepT += dt;
     if (!t.sneaking && t.stepT > 0.32) {
       t.stepT = 0;
