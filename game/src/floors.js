@@ -1,0 +1,163 @@
+// The three floors of the Marlowe Grand, the art-deco bank-and-gallery Moth robs in one night.
+// Coordinates are screen pixels inside the play area (x 0-1000, y 56-664). Each floor offers at
+// least three ways to the loot (open doorway, a lockable door, a glass wall to cut, a vent) and
+// lists them for the planning blueprint.
+
+const T = 16; // wall thickness
+
+/** The building's outer shell: four walls around the play area. */
+function shell() {
+  return [
+    { x: 0, y: 56, w: 1000, h: T },
+    { x: 0, y: 648, w: 1000, h: T },
+    { x: 0, y: 56, w: T, h: 608 },
+    { x: 984, y: 56, w: T, h: 608 },
+  ];
+}
+
+export const FLOORS = [
+  {
+    id: 'lobby',
+    name: 'THE LOBBY VAULT',
+    tip: 'Shadows hide you. Cones are cut by walls. Hold SHIFT to sneak silently.',
+    loot: { name: 'THE SAPPHIRE MOTH', value: 48000, x: 700, y: 340, gem: '#5fe3ff' },
+    start: { x: 70, y: 600 },
+    exit: { x: 872, y: 76, w: 108, h: 92 },
+    walls: [
+      ...shell(),
+      { x: 600, y: 220, w: 70, h: T, style: 'wall' },
+      { x: 730, y: 220, w: 70, h: T },
+      { x: 784, y: 236, w: T, h: 224 },
+      { x: 600, y: 236, w: T, h: 60 },
+      { x: 600, y: 380, w: T, h: 80 },
+      { x: 600, y: 444, w: 60, h: T },
+      { x: 740, y: 444, w: 44, h: T },
+      { x: 300, y: 300, w: 90, h: 44, style: 'case' },
+      { x: 170, y: 160, w: 44, h: 120, style: 'case' },
+      { x: 400, y: 500, w: 120, h: 40, style: 'case' },
+    ],
+    glass: [{ x: 660, y: 444, w: 80, h: T }],
+    doors: [{ x: 670, y: 220, w: 60, h: T }],
+    shadows: [
+      { x: 110, y: 470, r: 62 },
+      { x: 66, y: 606, r: 50 },
+      { x: 260, y: 230, r: 56 },
+      { x: 520, y: 400, r: 58 },
+      { x: 880, y: 560, r: 64 },
+      { x: 520, y: 130, r: 54 },
+    ],
+    vents: [{ a: { x: 60, y: 110 }, b: { x: 640, y: 270 } }],
+    guards: [
+      { name: 'BRUNO', route: [[560, 180], [840, 180], [840, 500], [560, 500]], pause: 0.8 },
+      { name: 'MAE', route: [[270, 580], [560, 580]], pause: 1.6 },
+    ],
+    cameras: [{ id: 'CAM-1', x: 330, y: 74, facing: Math.PI / 2, sweep: 0.75, period: 6, box: { x: 26, y: 330 } }],
+    routes: [
+      { label: 'A  OPEN ARCH', color: '#58e08a', points: [[70, 600], [300, 590], [560, 420], [610, 340], [700, 340]] },
+      { label: 'B  VENT CRAWL', color: '#7ab8ff', points: [[70, 600], [60, 110], [640, 270], [700, 340]] },
+      { label: 'C  CUT THE GLASS', color: '#ffb43c', points: [[70, 600], [560, 600], [700, 470], [700, 340]] },
+    ],
+  },
+  {
+    id: 'gallery',
+    name: 'THE GALLERY OF HOURS',
+    tip: 'Glass stops feet, not eyes. Cut it, or pick the side door while VANCE walks away.',
+    loot: { name: 'THE CLOCKWORK HEART', value: 72000, x: 520, y: 352, gem: '#ff6fae' },
+    start: { x: 64, y: 604 },
+    exit: { x: 872, y: 76, w: 108, h: 96 },
+    walls: [
+      ...shell(),
+      { x: 400, y: 250, w: 100, h: T },
+      { x: 560, y: 250, w: 80, h: T },
+      { x: 400, y: 434, w: 80, h: T },
+      { x: 560, y: 434, w: 80, h: T },
+      { x: 400, y: 266, w: T, h: 50 },
+      { x: 400, y: 376, w: T, h: 58 },
+      { x: 624, y: 266, w: T, h: 168 },
+      { x: 250, y: 72, w: T, h: 120 },
+      { x: 736, y: 470, w: T, h: 178 },
+      { x: 760, y: 250, w: 130, h: T },
+      { x: 180, y: 300, w: 70, h: 40, style: 'case' },
+      { x: 770, y: 330, w: 46, h: 80, style: 'case' },
+      { x: 290, y: 430, w: 44, h: 44, style: 'case' },
+      { x: 560, y: 560, w: 100, h: 34, style: 'case' },
+    ],
+    glass: [{ x: 480, y: 434, w: 80, h: T }],
+    doors: [{ x: 400, y: 316, w: T, h: 60 }],
+    shadows: [
+      { x: 118, y: 470, r: 64 },
+      { x: 340, y: 570, r: 58 },
+      { x: 700, y: 178, r: 56 },
+      { x: 860, y: 470, r: 62 },
+      { x: 150, y: 150, r: 56 },
+      { x: 482, y: 500, r: 46 },
+    ],
+    vents: [{ a: { x: 230, y: 620 }, b: { x: 444, y: 414 } }],
+    guards: [
+      { name: 'VANCE', route: [[360, 216], [680, 216], [680, 494], [360, 494]], pause: 0.6 },
+      { name: 'ROSA', route: [[300, 118], [830, 118]], pause: 1.8 },
+      { name: 'OTTO', route: [[930, 300], [930, 610]], pause: 1.4 },
+    ],
+    cameras: [
+      { id: 'CAM-A', x: 330, y: 74, facing: Math.PI / 2, sweep: 0.7, period: 7, box: { x: 26, y: 300 } },
+      { id: 'CAM-B', x: 860, y: 646, facing: -Math.PI / 2, sweep: 0.6, period: 6, box: { x: 974, y: 220 } },
+      { id: 'CAM-C', x: 616, y: 274, facing: (3 * Math.PI) / 4, sweep: 0.35, period: 5, box: { x: 760, y: 630 } },
+    ],
+    routes: [
+      { label: 'A  VENT CRAWL', color: '#7ab8ff', points: [[64, 604], [230, 620], [444, 414], [520, 352]] },
+      { label: 'B  SIDE DOOR (pick)', color: '#58e08a', points: [[64, 604], [80, 346], [400, 346], [520, 352]] },
+      { label: 'C  CUT THE GLASS', color: '#ffb43c', points: [[64, 604], [470, 520], [520, 450], [520, 352]] },
+    ],
+  },
+  {
+    id: 'penthouse',
+    name: 'THE PENTHOUSE SAFE',
+    tip: 'Four guards, three cameras. Cut a junction box and that camera stays dark for good.',
+    loot: { name: 'THE VELVET CROWN', value: 120000, x: 500, y: 168, gem: '#c58bff' },
+    start: { x: 936, y: 604 },
+    exit: { x: 20, y: 552, w: 108, h: 92 },
+    walls: [
+      ...shell(),
+      { x: 380, y: 72, w: T, h: 70 },
+      { x: 380, y: 202, w: T, h: 70 },
+      { x: 604, y: 72, w: T, h: 110 },
+      { x: 604, y: 242, w: T, h: 30 },
+      { x: 380, y: 272, w: 80, h: T },
+      { x: 540, y: 272, w: 80, h: T },
+      { x: 200, y: 380, w: 160, h: T },
+      { x: 640, y: 380, w: 160, h: T },
+      { x: 480, y: 440, w: 40, h: 120, style: 'case' },
+      { x: 160, y: 180, w: 60, h: 60, style: 'case' },
+      { x: 780, y: 160, w: 60, h: 60, style: 'case' },
+      { x: 150, y: 500, w: 16, h: 148 },
+    ],
+    glass: [{ x: 460, y: 272, w: 80, h: T }],
+    doors: [{ x: 604, y: 182, w: T, h: 60 }],
+    shadows: [
+      { x: 880, y: 470, r: 60 },
+      { x: 934, y: 608, r: 50 },
+      { x: 300, y: 480, r: 58 },
+      { x: 690, y: 500, r: 56 },
+      { x: 110, y: 300, r: 56 },
+      { x: 880, y: 140, r: 56 },
+      { x: 300, y: 130, r: 50 },
+    ],
+    vents: [{ a: { x: 960, y: 330 }, b: { x: 584, y: 96 } }],
+    guards: [
+      { name: 'LUCIEN', route: [[340, 320], [660, 320]], pause: 1.2 },
+      { name: 'IVY', route: [[250, 440], [250, 600], [700, 600], [700, 440]], pause: 0.7 },
+      { name: 'DORA', route: [[700, 110], [920, 110], [920, 260], [700, 260]], pause: 0.9 },
+      { name: 'KASPAR', route: [[90, 120], [340, 120], [340, 340], [90, 340]], pause: 0.9 },
+    ],
+    cameras: [
+      { id: 'CAM-X', x: 500, y: 664 - 18, facing: -Math.PI / 2, sweep: 0.8, period: 7, box: { x: 974, y: 420 } },
+      { id: 'CAM-Y', x: 18, y: 74, facing: Math.PI / 4, sweep: 0.45, period: 6, box: { x: 340, y: 74 } },
+      { id: 'CAM-Z', x: 396, y: 90, facing: Math.PI / 4, sweep: 0.3, period: 5, box: { x: 974, y: 74 } },
+    ],
+    routes: [
+      { label: 'A  ROOF VENT', color: '#7ab8ff', points: [[936, 604], [960, 330], [584, 96], [500, 168]] },
+      { label: 'B  SIDE DOOR (pick)', color: '#58e08a', points: [[936, 604], [880, 320], [640, 212], [500, 168]] },
+      { label: 'C  CUT THE GLASS', color: '#ffb43c', points: [[936, 604], [690, 500], [500, 340], [500, 168]] },
+    ],
+  },
+];
