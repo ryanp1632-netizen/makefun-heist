@@ -291,7 +291,7 @@ function tension(ctx, state) {
   const cy = PLAY.y + PLAY.h / 2;
   const g = ctx.createRadialGradient(cx, cy, PLAY.h * 0.42, cx, cy, PLAY.w * 0.62);
   g.addColorStop(0, 'rgba(255,40,60,0)');
-  g.addColorStop(1, `rgba(255,40,60,${0.32 * k})`);
+  g.addColorStop(1, `rgba(255,40,60,${0.16 * k})`);
   ctx.fillStyle = g;
   ctx.fillRect(PLAY.x, PLAY.y, PLAY.w, PLAY.h);
   let warn = '';

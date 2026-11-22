@@ -51,8 +51,6 @@ export const FLOORS = [
       { kind: 'rug', x: 200, y: 380, w: 150, h: 90 },
       { kind: 'plant', x: 964, y: 628 },
       { kind: 'plant', x: 300, y: 92 },
-      { kind: 'lamp', x: 420, y: 200 },
-      { kind: 'lamp', x: 860, y: 420 },
     ],
     guards: [
       { name: 'BRUNO', route: [[560, 180], [840, 180], [840, 500], [560, 500]], pause: 0.8 },
@@ -110,9 +108,6 @@ export const FLOORS = [
       { kind: 'plant', x: 36, y: 92 },
       { kind: 'plant', x: 230, y: 92 },
       { kind: 'plant', x: 964, y: 640 - 12 },
-      { kind: 'lamp', x: 150, y: 260 },
-      { kind: 'lamp', x: 840, y: 330 },
-      { kind: 'lamp', x: 600, y: 610 },
     ],
     guards: [
       { name: 'VANCE', route: [[360, 216], [680, 216], [680, 494], [360, 494]], pause: 0.6 },
@@ -170,8 +165,6 @@ export const FLOORS = [
       { kind: 'rug', x: 680, y: 430, w: 120, h: 140 },
       { kind: 'plant', x: 40, y: 92 },
       { kind: 'plant', x: 964, y: 92 },
-      { kind: 'lamp', x: 260, y: 560 },
-      { kind: 'lamp', x: 760, y: 300 },
     ],
     guards: [
       { name: 'LUCIEN', route: [[340, 320], [660, 320]], pause: 1.2 },

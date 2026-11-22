@@ -264,9 +264,9 @@ function car(ctx, state) {
 function decor(ctx, floor, layer) {
   for (const d of floor.decor ?? []) {
     if (layer === 'under' && d.kind === 'rug') {
-      ctx.fillStyle = 'rgba(120,24,48,0.55)';
+      ctx.fillStyle = 'rgba(40,52,96,0.45)';
       ctx.fillRect(d.x, d.y, d.w, d.h);
-      ctx.strokeStyle = 'rgba(240,194,90,0.55)';
+      ctx.strokeStyle = 'rgba(240,194,90,0.35)';
       ctx.lineWidth = 2;
       ctx.strokeRect(d.x + 5, d.y + 5, d.w - 10, d.h - 10);
       ctx.lineWidth = 1;
