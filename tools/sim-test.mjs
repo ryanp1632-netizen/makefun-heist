@@ -3,6 +3,7 @@
 import { startFloor, stepFloor, floorResults } from '../game/src/heist.js';
 import { FLOORS } from '../game/src/floors.js';
 import { emitNoise } from '../game/src/systems/noise.js';
+import { useTool } from '../game/src/systems/tools.js';
 
 let fails = 0;
 const check = (c, m) => {
@@ -71,5 +72,31 @@ for (let f = 0; f < FLOORS.length; f += 1) {
   for (const c of e.floor.cameras) check(!inWall(c.box.x, c.box.y), `floor ${f} ${c.id} junction box clear (${c.box.x},${c.box.y})`);
   check(!inWall(e.floor.start.x, e.floor.start.y), `floor ${f} start clear`);
 }
+// Walk-throughs with real inputs (sneak, hold E, tools): each floor can be beaten clean.
+const WALKS = [
+  [{ to: [40, 400] }, { to: [40, 110] }, { to: [56, 110] }, { e: 2 }, { to: [680, 330] }, { e: 1.5 }, { to: [700, 250] }, { e: 2.4 }, { to: [700, 200], run: 1 }, { to: [920, 120], run: 1 }],
+  [{ to: [230, 612] }, { e: 2 }, { tool: 'emp', at: [616, 274] }, { to: [500, 352] }, { e: 1.5 }, { to: [530, 232] }, { wait: 1 }, { to: [700, 180], run: 1 }, { to: [920, 120], run: 1 }],
+  [{ wait: 4 }, { to: [960, 340] }, { e: 2 }, { to: [520, 168] }, { e: 1.5 }, { tool: 'smoke', at: [250, 300] }, { tool: 'coin', at: [800, 560] }, { to: [420, 172], run: 1 }, { to: [300, 172], run: 1 }, { to: [260, 320], run: 1 }, { to: [120, 420], run: 1 }, { to: [120, 480], run: 1 }, { to: [70, 600], run: 1 }],
+];
+WALKS.forEach((plan, f) => {
+  const s = startFloor(f, { smoke: 2, emp: 1, coin: 2, cutter: 1 });
+  for (const step of plan) {
+    if (step.tool) useTool(s, step.tool, step.at[0], step.at[1]);
+    else if (step.wait) for (let k = 0; k < step.wait * 60; k += 1) stepFloor(s, { dx: 0, dy: 0, sneak: true });
+    else if (step.e) {
+      stepFloor(s, { dx: 0, dy: 0, interact: true, interactPressed: true });
+      for (let k = 0; k < step.e * 60; k += 1) stepFloor(s, { dx: 0, dy: 0, interact: true });
+    } else {
+      for (let k = 0; k < 60 * 30 && (s.phase === 'infil' || s.phase === 'getaway'); k += 1) {
+        const dx = step.to[0] - s.thief.x;
+        const dy = step.to[1] - s.thief.y;
+        if (Math.hypot(dx, dy) < 5) break;
+        stepFloor(s, { dx: Math.abs(dx) > 3 ? Math.sign(dx) : 0, dy: Math.abs(dy) > 3 ? Math.sign(dy) : 0, sneak: !step.run });
+      }
+    }
+  }
+  check(s.phase === 'escaped' && s.stats.spotted === 0, `floor ${f} walk-through escapes unseen (phase ${s.phase}, ${s.time.toFixed(1)} s, rating ${floorResults(s).rating})`);
+});
+
 console.log(fails ? `${fails} FAILED` : 'ALL PASS');
 process.exit(fails ? 1 : 0);
