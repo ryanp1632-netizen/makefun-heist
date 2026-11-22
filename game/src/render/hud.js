@@ -83,7 +83,7 @@ function sidePanel(ctx, state) {
   const rh = 21;
   panel(ctx, x, y, w, 34 + rows * rh);
   text(ctx, 'ON THE FLOOR', x + 12, y + 21, { size: 13, color: COLOR.gold });
-  text(ctx, `${state.guards.length} guards · ${state.cameras.length} cams`, x + w - 12, y + 21, { size: 11, color: COLOR.dim, align: 'right' });
+  text(ctx, `${state.guards.length} guards · ${state.cameras.length} cam${state.cameras.length === 1 ? '' : 's'}`, x + w - 12, y + 21, { size: 11, color: COLOR.dim, align: 'right' });
   y += 34;
   for (const g of state.guards) {
     const c = guardConeColor(g);
@@ -208,7 +208,47 @@ function getawayClock(ctx, state) {
   });
 }
 
+/** A gold chevron beside Moth pointing at the current objective: the loot, then the car. */
+function objectiveArrow(ctx, state) {
+  const t = state.thief;
+  if (t.hidden) return;
+  const e = state.floor.exit;
+  const goal = t.hasLoot ? { x: e.x + e.w / 2, y: e.y + e.h / 2, label: 'CAR' } : { x: state.floor.loot.x, y: state.floor.loot.y, label: 'LOOT' };
+  const d = Math.hypot(goal.x - t.x, goal.y - t.y);
+  if (d < 70) return;
+  const a = Math.atan2(goal.y - t.y, goal.x - t.x);
+  const pulse = 34 + 3 * Math.sin(state.time * 6);
+  ctx.save();
+  ctx.translate(t.x + Math.cos(a) * pulse, t.y + Math.sin(a) * pulse);
+  ctx.rotate(a);
+  ctx.fillStyle = t.hasLoot ? COLOR.exit : COLOR.gold;
+  ctx.beginPath();
+  ctx.moveTo(9, 0);
+  ctx.lineTo(-5, -7);
+  ctx.lineTo(-2, 0);
+  ctx.lineTo(-5, 7);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
+/** The floor's title card, fading out over the first seconds. */
+function introCard(ctx, state) {
+  if (!(state.introT > 0)) return;
+  const k = Math.min(1, state.introT / 0.6);
+  ctx.save();
+  ctx.globalAlpha = k;
+  const cx = PLAY.x + PLAY.w / 2;
+  const cy = PLAY.y + 150;
+  panel(ctx, cx - 300, cy - 58, 600, 116, COLOR.gold);
+  text(ctx, `FLOOR ${state.floorIndex + 1}/3 · ${state.floor.name}`, cx, cy - 18, { size: 26, color: COLOR.gold, align: 'center', font: DECO });
+  text(ctx, `Lift ${state.floor.loot.name} (${money(state.floor.loot.value)}) and reach the GETAWAY CAR`, cx, cy + 12, { size: 15, color: COLOR.text, align: 'center' });
+  text(ctx, `${state.guards.length} guards · ${state.cameras.length} camera${state.cameras.length === 1 ? '' : 's'} · follow the gold arrow`, cx, cy + 38, { size: 13, color: COLOR.dim, align: 'center', weight: 'normal' });
+  ctx.restore();
+}
+
 function prompts(ctx, state, run) {
+  objectiveArrow(ctx, state);
   const it = findInteraction(state);
   if (it && !state.thief.job) pill(ctx, it.label, state.thief.x, state.thief.y - 44, { size: 12, color: '#fff3c4', edge: COLOR.gold });
   if (state.message.t > 0) pill(ctx, state.message.text, PLAY.x + PLAY.w / 2, PLAY.y + PLAY.h - 22, { size: 13, color: '#fff', edge: COLOR.panelEdge });
@@ -258,5 +298,6 @@ export function drawHud(ctx, state, run) {
   sidePanel(ctx, state);
   toolBar(ctx, state, run);
   getawayClock(ctx, state);
+  introCard(ctx, state);
   prompts(ctx, state, run);
 }

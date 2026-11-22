@@ -58,7 +58,7 @@ export function drawTitle(ctx, time) {
     const x = 220 + i * 290;
     text(ctx, `${i + 1}. ${f.name}`, x, 500, { size: 14 });
     text(ctx, `${f.loot.name}`, x, 522, { size: 13, color: '#ffe9a8', weight: 'normal' });
-    text(ctx, `${money(f.loot.value)} · ${f.guards.length} guards · ${f.cameras.length} cams`, x, 543, { size: 12, color: COLOR.dim, weight: 'normal' });
+    text(ctx, `${money(f.loot.value)} · ${f.guards.length} guards · ${f.cameras.length} cam${f.cameras.length === 1 ? '' : 's'}`, x, 543, { size: 12, color: COLOR.dim, weight: 'normal' });
   });
   const blink = Math.sin(time * 4) > -0.3;
   if (blink) pill(ctx, 'PRESS ENTER TO PLAN THE JOB', 640, 610, { size: 20, color: '#1a1030', bg: COLOR.gold });
@@ -186,7 +186,7 @@ export function drawPlan(ctx, run, time) {
     ctx.fillRect(x + 16, 120 + i * 26, 18, 12);
     text(ctx, r.label, x + 44, 131 + i * 26, { size: 14 });
   });
-  text(ctx, `${floor.guards.length} guards · ${floor.cameras.length} cameras · getaway clock 35 s`, x + 16, 222, { size: 12, color: '#9cc3ef', weight: 'normal' });
+  text(ctx, `${floor.guards.length} guards · ${floor.cameras.length} camera${floor.cameras.length === 1 ? '' : 's'} · getaway clock 35 s`, x + 16, 222, { size: 12, color: '#9cc3ef', weight: 'normal' });
   panel(ctx, x, 252, 396, 340, COLOR.gold);
   text(ctx, 'TOOL SHOP', x + 16, 280, { size: 16, color: COLOR.gold });
   text(ctx, `CASH ${money(run.cash)}`, x + 380, 280, { size: 16, color: COLOR.calm, align: 'right' });

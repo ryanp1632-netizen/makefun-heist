@@ -84,6 +84,7 @@ function planScene(r) {
 function getawayScene(r) {
   const s = startFloor(2, { smoke: 1, emp: 0, coin: 1, cutter: 0 });
   run(s, 2);
+  s.introT = 0;
   s.glass[0].cut = true;
   s.doors[0].open = true;
   s.cameras[2].cut = true;
@@ -119,6 +120,7 @@ function getawayScene(r) {
 function resultsScene(r) {
   const s = startFloor(1, { smoke: 0, emp: 0, coin: 1, cutter: 0 });
   run(s, 2.5);
+  s.introT = 0;
   s.thief.hasLoot = true;
   Object.assign(s.thief, { x: 920, y: 120 });
   s.phase = PHASE_ESCAPED;

@@ -41,7 +41,8 @@ export function startFloor(floorIndex, kit) {
     spottedT: 0,
     solids: [],
     sightEdges: [],
-    message: { text: floor.tip, t: 6 },
+    message: { text: floor.tip, t: 9 },
+    introT: 2.8, // the floor's title card
   };
   state.rebuildWalls = () => rebuildWalls(state);
   state.catchThief = (by) => catchThief(state, by);
@@ -77,6 +78,7 @@ export function stepFloor(state, input, dt = STEP) {
   if (state.phase !== PHASE_INFIL && state.phase !== PHASE_GETAWAY) return;
   state.time += dt;
   if (state.message.t > 0) state.message.t -= dt;
+  if (state.introT > 0) state.introT -= dt;
 
   const hadLoot = state.thief.hasLoot;
   stepThief(state, input, dt);
