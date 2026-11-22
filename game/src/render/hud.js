@@ -243,7 +243,7 @@ function objectiveArrow(ctx, state) {
 
 /** The floor's title card, fading out over the first seconds. */
 function introCard(ctx, state) {
-  if (!(state.introT > 0)) return;
+  if (!(state.introT > 0) || (state.phase !== 'infil' && state.phase !== 'getaway')) return;
   const k = Math.min(1, state.introT / 0.6);
   ctx.save();
   ctx.globalAlpha = k;

@@ -133,6 +133,7 @@ export function stepGuard(state, guard, dt) {
       setMode(guard, ALERT);
       guard.lostT = 0;
       state.stats.spotted += 1;
+      state.lastSpot = { by: guard.name, watched: guard.seeT };
       raiseAlarm(state, ALARM.guardSpotted);
       state.events.push('spotted');
     }

@@ -215,6 +215,14 @@ export function drawPlan(ctx, run, time) {
   text(ctx, 'Gold dashes = guard patrols · pink fans = camera sweeps · purple = shadow (safe) · blue squares = vent grates', 24, 700, { size: 13, color: '#9cc3ef', weight: 'normal' });
 }
 
+/** Why the catch was fair: how long the cone held you before the "!", or what filled the alarm. */
+function fairNote(state) {
+  if (state.caughtBy === 'the LOCKDOWN') return 'The ALARM meter reached 100%: every door sealed.';
+  const s = state.lastSpot;
+  if (s && s.by === state.caughtBy) return `${s.by}'s cone held you for ${s.watched.toFixed(1)} s: the ? filled, then !`;
+  return 'An alerted guard reached you before you broke line of sight.';
+}
+
 export function drawSpotted(ctx, state) {
   const k = Math.min(1, state.spottedT / 0.25);
   ctx.fillStyle = `rgba(80,0,10,${0.35 * k})`;
@@ -234,6 +242,8 @@ export function drawSpotted(ctx, state) {
   ctx.strokeRect(PLAY.x + 4, PLAY.y + 4, PLAY.w - 8, PLAY.h - 8);
   pill(ctx, 'SPOTTED!', PLAY.x + PLAY.w / 2, PLAY.y + 120, { size: 44, color: '#fff', bg: 'rgba(170,10,30,0.95)' });
   pill(ctx, `by ${state.caughtBy}`, PLAY.x + PLAY.w / 2, PLAY.y + 172, { size: 18, color: '#ffd0d4' });
+  const why = fairNote(state);
+  if (why) pill(ctx, why, PLAY.x + PLAY.w / 2, PLAY.y + 212, { size: 14, color: '#fff', edge: COLOR.lockdown });
 }
 
 export function drawCaught(ctx, state) {
@@ -241,8 +251,9 @@ export function drawCaught(ctx, state) {
   panel(ctx, 340, 200, 600, 300, COLOR.lockdown);
   text(ctx, 'CAUGHT', 640, 268, { size: 52, color: COLOR.lockdown, align: 'center', font: DECO });
   text(ctx, `${state.caughtBy} ended the job on ${state.floor.name}.`, 640, 310, { size: 16, color: COLOR.text, align: 'center', weight: 'normal' });
+  text(ctx, fairNote(state), 640, 366, { size: 14, color: '#ffd0d4', align: 'center', weight: 'normal' });
   text(ctx, `Spotted ${state.stats.spotted}× · alarm peaked at ${Math.round(state.stats.maxAlarm)}%`, 640, 340, { size: 14, color: COLOR.dim, align: 'center', weight: 'normal' });
-  text(ctx, 'Tip: wait in a shadow pool until the cone sweeps past.', 640, 380, { size: 14, color: '#ffe9a8', align: 'center', weight: 'normal' });
+  text(ctx, 'Tip: wait in a shadow pool until the cone sweeps past.', 640, 396, { size: 14, color: '#ffe9a8', align: 'center', weight: 'normal' });
   pill(ctx, 'R  RETRY THIS FLOOR (same tools)', 640, 440, { size: 18, color: '#1a1030', bg: COLOR.gold });
 }
 
