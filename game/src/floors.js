@@ -47,6 +47,13 @@ export const FLOORS = [
       { x: 520, y: 130, r: 54 },
     ],
     vents: [{ a: { x: 60, y: 110 }, b: { x: 640, y: 270 } }],
+    decor: [
+      { kind: 'rug', x: 200, y: 380, w: 150, h: 90 },
+      { kind: 'plant', x: 964, y: 628 },
+      { kind: 'plant', x: 300, y: 92 },
+      { kind: 'lamp', x: 420, y: 200 },
+      { kind: 'lamp', x: 860, y: 420 },
+    ],
     guards: [
       { name: 'BRUNO', route: [[560, 180], [840, 180], [840, 500], [560, 500]], pause: 0.8 },
       { name: 'MAE', route: [[270, 580], [560, 580]], pause: 1.6 },
@@ -93,6 +100,20 @@ export const FLOORS = [
       { x: 482, y: 500, r: 46 },
     ],
     vents: [{ a: { x: 230, y: 620 }, b: { x: 444, y: 414 } }],
+    lasers: [
+      { a: [266, 190], b: [400, 252], on: 2.4, off: 1.4 },
+      { a: [640, 372], b: [770, 372], on: 2.0, off: 1.6, phase: 1.1 },
+    ],
+    decor: [
+      { kind: 'rug', x: 36, y: 226, w: 130, h: 56 },
+      { kind: 'rug', x: 520, y: 470, w: 110, h: 70 },
+      { kind: 'plant', x: 36, y: 92 },
+      { kind: 'plant', x: 230, y: 92 },
+      { kind: 'plant', x: 964, y: 640 - 12 },
+      { kind: 'lamp', x: 150, y: 260 },
+      { kind: 'lamp', x: 840, y: 330 },
+      { kind: 'lamp', x: 600, y: 610 },
+    ],
     guards: [
       { name: 'VANCE', route: [[360, 216], [680, 216], [680, 494], [360, 494]], pause: 0.6 },
       { name: 'ROSA', route: [[300, 118], [830, 118]], pause: 1.8 },
@@ -143,6 +164,15 @@ export const FLOORS = [
       { x: 300, y: 130, r: 50 },
     ],
     vents: [{ a: { x: 960, y: 330 }, b: { x: 584, y: 96 } }],
+    lasers: [{ a: [840, 190], b: [984, 190], on: 2.2, off: 1.5 }],
+    decor: [
+      { kind: 'rug', x: 420, y: 330, w: 160, h: 90 },
+      { kind: 'rug', x: 680, y: 430, w: 120, h: 140 },
+      { kind: 'plant', x: 40, y: 92 },
+      { kind: 'plant', x: 964, y: 92 },
+      { kind: 'lamp', x: 260, y: 560 },
+      { kind: 'lamp', x: 760, y: 300 },
+    ],
     guards: [
       { name: 'LUCIEN', route: [[340, 320], [660, 320]], pause: 1.2 },
       { name: 'IVY', route: [[250, 440], [250, 600], [700, 600], [700, 440]], pause: 0.7 },

@@ -260,8 +260,102 @@ function car(ctx, state) {
   pill(ctx, live ? 'GETAWAY CAR  GO!' : 'GETAWAY CAR', cx, e.y + 12, { size: 11, color: '#bfffe2', edge: live ? COLOR.exit : null });
 }
 
+/** Deco rugs, potted palms and warm lamp pools: the gallery by night, for looks only. */
+function decor(ctx, floor, layer) {
+  for (const d of floor.decor ?? []) {
+    if (layer === 'under' && d.kind === 'rug') {
+      ctx.fillStyle = 'rgba(120,24,48,0.55)';
+      ctx.fillRect(d.x, d.y, d.w, d.h);
+      ctx.strokeStyle = 'rgba(240,194,90,0.55)';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(d.x + 5, d.y + 5, d.w - 10, d.h - 10);
+      ctx.lineWidth = 1;
+      ctx.strokeRect(d.x + 10, d.y + 10, d.w - 20, d.h - 20);
+      const cx = d.x + d.w / 2;
+      const cy = d.y + d.h / 2;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - 16);
+      ctx.lineTo(cx + 16, cy);
+      ctx.lineTo(cx, cy + 16);
+      ctx.lineTo(cx - 16, cy);
+      ctx.closePath();
+      ctx.stroke();
+    } else if (layer === 'under' && d.kind === 'lamp') {
+      const g = ctx.createRadialGradient(d.x, d.y, 4, d.x, d.y, 90);
+      g.addColorStop(0, 'rgba(255,205,120,0.30)');
+      g.addColorStop(1, 'rgba(255,205,120,0)');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, 90, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (layer === 'over' && d.kind === 'lamp') {
+      ctx.fillStyle = '#ffe2a0';
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = COLOR.gold;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, 9, 0, Math.PI * 2);
+      ctx.stroke();
+    } else if (layer === 'over' && d.kind === 'plant') {
+      ctx.fillStyle = '#5a3a1e';
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, 9, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#2fae6a';
+      for (let i = 0; i < 7; i += 1) {
+        const a = (i / 7) * Math.PI * 2;
+        ctx.beginPath();
+        ctx.ellipse(d.x + Math.cos(a) * 9, d.y + Math.sin(a) * 9, 9, 3.5, a, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+  }
+}
+
+/** Laser tripwires: a hot red beam while live, a faint dotted line and a countdown while off. */
+export function drawLasers(ctx, state) {
+  for (const l of state.lasers ?? []) {
+    const [ax, ay] = l.a;
+    const [bx, by] = l.b;
+    if (l.live) {
+      ctx.strokeStyle = 'rgba(255,40,70,0.35)';
+      ctx.lineWidth = 9;
+      ctx.beginPath();
+      ctx.moveTo(ax, ay);
+      ctx.lineTo(bx, by);
+      ctx.stroke();
+      ctx.strokeStyle = '#ff3b5c';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+      ctx.strokeStyle = '#ffd0d8';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    } else {
+      ctx.setLineDash([3, 6]);
+      ctx.strokeStyle = 'rgba(255,90,110,0.45)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(ax, ay);
+      ctx.lineTo(bx, by);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    for (const [x, y] of [l.a, l.b]) {
+      ctx.fillStyle = '#2a0a12';
+      ctx.fillRect(x - 6, y - 6, 12, 12);
+      ctx.strokeStyle = l.live ? '#ff3b5c' : '#7a3a48';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(x - 6, y - 6, 12, 12);
+    }
+    pill(ctx, l.live ? `${l.id} · LIVE` : `${l.id} · OFF`, (ax + bx) / 2, (ay + by) / 2 - 14, { size: 10, color: l.live ? '#ffb3c0' : '#c9c3dd' });
+  }
+}
+
 export function drawFloor(ctx, state) {
   marble(ctx);
+  decor(ctx, state.floor, 'under');
   sunburst(ctx, state.floor.loot.x, state.floor.loot.y, hexToRgb(state.floor.loot.gem));
   shadows(ctx, state.floor, state.time);
   vents(ctx, state.floor);
@@ -269,4 +363,5 @@ export function drawFloor(ctx, state) {
   walls(ctx, state.floor);
   glassAndDoors(ctx, state);
   junctionBoxes(ctx, state);
+  decor(ctx, state.floor, 'over');
 }

@@ -10,6 +10,7 @@ import { makeCameras, stepCamera } from './actors/cameras.js';
 import { makeAlarm, stepAlarm } from './systems/alarm.js';
 import { stepNoises } from './systems/noise.js';
 import { stepClouds } from './systems/tools.js';
+import { makeLasers, stepLasers } from './systems/lasers.js';
 
 export const PHASE_INFIL = 'infil';
 export const PHASE_GETAWAY = 'getaway';
@@ -27,6 +28,7 @@ export function startFloor(floorIndex, kit) {
     thief: makeThief(floor),
     guards: makeGuards(floor),
     cameras: makeCameras(floor),
+    lasers: makeLasers(floor),
     glass: floor.glass.map((g) => ({ ...g, cut: false })),
     doors: floor.doors.map((d) => ({ ...d, open: false })),
     alarm: makeAlarm(),
@@ -91,6 +93,7 @@ export function stepFloor(state, input, dt = STEP) {
   stepNoises(state, dt, (g, n) => hearNoise(state, g, n));
   for (const g of state.guards) stepGuard(state, g, dt);
   for (const c of state.cameras) stepCamera(state, c, dt);
+  stepLasers(state, dt);
   if (state.phase === PHASE_SPOTTED) return;
 
   const watched = state.guards.some((g) => g.sees || g.mode === ALERT) || state.cameras.some((c) => c.sees);

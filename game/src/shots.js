@@ -8,6 +8,7 @@ import { emitNoise } from './systems/noise.js';
 import { useTool } from './systems/tools.js';
 import { inShadow } from './systems/vision.js';
 import { leaveFootprint } from './actors/thief.js';
+import { laserLive } from './systems/lasers.js';
 
 const IDLE = { dx: 0, dy: 0 };
 
@@ -48,6 +49,7 @@ function heistScene(r) {
   s.cameras[1].offT = 6.2;
   s.time = 9.4;
   for (const c of s.cameras) c.angle = c.base + c.sweep * Math.sin((s.time * Math.PI * 2) / c.period);
+  for (const l of s.lasers) l.live = laserLive(l, s.time);
   s.clouds[0].r = 66;
   s.clouds[0].t = 1.4;
   place(byName(s, 'VANCE'), 372, 470, 0.25, SUSPICIOUS, 0.55, "Who's there?");

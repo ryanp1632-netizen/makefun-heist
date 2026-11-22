@@ -112,6 +112,15 @@ function blueprint(ctx, floor, ox, oy, scale) {
   ctx.strokeStyle = '#f0c25a';
   for (const d of floor.doors) ctx.strokeRect(d.x, d.y, d.w, d.h);
   ctx.setLineDash([]);
+  for (const l of floor.lasers ?? []) {
+    ctx.strokeStyle = '#ff3b5c';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(l.a[0], l.a[1]);
+    ctx.lineTo(l.b[0], l.b[1]);
+    ctx.stroke();
+    pill(ctx, `LASER ${l.on}s on / ${l.off}s off`, (l.a[0] + l.b[0]) / 2, (l.a[1] + l.b[1]) / 2 + 18, { size: 12, color: '#ffb3c0' });
+  }
   for (const g of floor.guards) {
     ctx.strokeStyle = 'rgba(255,222,130,0.9)';
     ctx.setLineDash([10, 7]);

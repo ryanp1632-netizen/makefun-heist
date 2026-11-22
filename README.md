@@ -18,6 +18,7 @@ node serve.ts   # then open http://localhost:8080
 ```
 
 - **WASD / arrows** move, **Shift** sneak (silent, slow), **E** (hold) lift · pick a lock · cut glass · crawl a vent · cut a camera wire
+- **Lasers** blink on a beat: cross a beam only while it is OFF, or the alarm jumps.
 - **Click** throws the selected tool at the cursor, **1-4** pick a tool (smoke, EMP tag, coin, glass cutter), **R** retry the floor
 - Shadow pools hide you (cameras cannot see into them at all; guards only up close). Glass stops feet, not eyes.
 - A guard who sees you shows a **?** that fills after a short grace, then **!** — a chase and a jump on the alarm.

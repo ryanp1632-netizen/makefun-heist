@@ -72,6 +72,23 @@ for (let f = 0; f < FLOORS.length; f += 1) {
   for (const c of e.floor.cameras) check(!inWall(c.box.x, c.box.y), `floor ${f} ${c.id} junction box clear (${c.box.x},${c.box.y})`);
   check(!inWall(e.floor.start.x, e.floor.start.y), `floor ${f} start clear`);
 }
+// Lasers: a live beam trips the alarm, the same beam while off does not
+{
+  const s = startFloor(1, { smoke: 0, emp: 0, coin: 0, cutter: 0 });
+  const l = s.lasers[0];
+  const mid = [(l.a[0] + l.b[0]) / 2, (l.a[1] + l.b[1]) / 2];
+  s.guards.forEach((g) => Object.assign(g, { x: -999, y: -999, route: [[-999, -999], [-998, -999]] }));
+  Object.assign(s.thief, { x: mid[0], y: mid[1] });
+  stepFloor(s, { dx: 0, dy: 0 });
+  check(s.alarm.value >= 20 && s.stats.lasersTripped === 1, `live laser trips the alarm (${s.alarm.value.toFixed(0)}%)`);
+  const o = startFloor(1, { smoke: 0, emp: 0, coin: 0, cutter: 0 });
+  o.guards.forEach((g) => Object.assign(g, { x: -999, y: -999, route: [[-999, -999], [-998, -999]] }));
+  o.time = l.on + 0.2; // inside the off gap
+  Object.assign(o.thief, { x: mid[0], y: mid[1] });
+  stepFloor(o, { dx: 0, dy: 0 });
+  check(o.alarm.value === 0, `laser in its off gap lets you through (${o.alarm.value.toFixed(0)}%)`);
+}
+
 // Walk-throughs with real inputs (sneak, hold E, tools): each floor can be beaten clean.
 const WALKS = [
   [{ to: [40, 400] }, { to: [40, 110] }, { to: [56, 110] }, { e: 2 }, { to: [680, 330] }, { e: 1.5 }, { to: [700, 250] }, { e: 2.4 }, { to: [700, 200], run: 1 }, { to: [920, 120], run: 1 }],

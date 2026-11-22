@@ -115,6 +115,7 @@ function sidePanel(ctx, state) {
     ['vent', 'VENT = hidden crawl (E)'],
     ['glass', 'GLASS = see-through, cut it (4)'],
     ['box', 'JUNCTION BOX = cut cam wire (E)'],
+    ['laser', 'LASER = blinks; cross when OFF'],
     ['loot', 'LOOT PLINTH · then GETAWAY CAR'],
   ];
   const lh = Math.min(22, (PLAY.y + PLAY.h - y - 40) / items.length);
@@ -147,6 +148,14 @@ function sidePanel(ctx, state) {
       ctx.fillRect(ix - 8, iy - 4, 16, 8);
       ctx.strokeStyle = COLOR.glassEdge;
       ctx.strokeRect(ix - 8, iy - 4, 16, 8);
+    } else if (kind === 'laser') {
+      ctx.strokeStyle = '#ff3b5c';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(ix - 8, iy);
+      ctx.lineTo(ix + 8, iy);
+      ctx.stroke();
+      ctx.lineWidth = 1.5;
     } else if (kind === 'box') {
       ctx.fillStyle = '#4b1d3d';
       ctx.fillRect(ix - 6, iy - 6, 12, 12);

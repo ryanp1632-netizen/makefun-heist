@@ -69,6 +69,10 @@ const SOUNDS = {
   },
   caught: () => tone(300, 0.9, { type: 'sawtooth', vol: 0.18, slide: -220 }),
   lift: () => [880, 1108, 1318, 1760].forEach((f, i) => tone(f, 0.4, { vol: 0.12, delay: i * 0.07 })),
+  laser: () => {
+    tone(1800, 0.15, { type: 'square', vol: 0.12 });
+    tone(1400, 0.3, { type: 'square', vol: 0.12, delay: 0.15 });
+  },
   door: () => tone(220, 0.12, { type: 'square', vol: 0.1 }),
   glass: () => hiss(0.4, 0.15, 3000),
   wire: () => tone(160, 0.25, { type: 'sawtooth', vol: 0.12, slide: -100 }),

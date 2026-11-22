@@ -6,7 +6,7 @@ import { PHASE_CAUGHT, PHASE_ESCAPED, PHASE_SPOTTED, floorResults, startFloor, s
 import { emptyKit, useTool } from './systems/tools.js';
 import { makeInput } from './input.js';
 import { playFrame, unlockAudio } from './audio.js';
-import { drawFloor, drawLoot } from './render/floor-art.js';
+import { drawFloor, drawLasers, drawLoot } from './render/floor-art.js';
 import { drawCones, drawSmokeAndNoise } from './render/cones.js';
 import { drawCameras, drawGuards, drawThief } from './render/actors.js';
 import { drawHud } from './render/hud.js';
@@ -126,6 +126,7 @@ export function render(run) {
   const st = run.state;
   drawFloor(ctx, st);
   drawCones(ctx, st);
+  drawLasers(ctx, st);
   drawLoot(ctx, st);
   drawSmokeAndNoise(ctx, st);
   drawGuards(ctx, st);
